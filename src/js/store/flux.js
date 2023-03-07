@@ -1,43 +1,59 @@
 const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
-			demo: [
-				{
-					title: "FIRST",
-					background: "white",
-					initial: "white"
-				},
-				{
-					title: "SECOND",
-					background: "white",
-					initial: "white"
-				}
-			]
+			characters: [],
+			person: [],
+
+			planets: [],
+			favorites: [],
+			loading: true
 		},
 		actions: {
-			// Use getActions to call a function within a fuction
-			exampleFunction: () => {
-				getActions().changeColor(0, "green");
+			getCharactersFetch: async () => {
+				setStore({ loading: true })
+				try {
+					await fetch("https://www.swapi.tech/api/people/")
+						.then(res => res.json())
+						.then(data => {
+							setStore({ characters: data.results })
+							setStore({ loading: false })
+						})
+				} catch (error) {
+					console.log('problem with fetch:' + error.message);
+					setStore({ loading: false })
+				}
 			},
-			loadSomeData: () => {
-				/**
-					fetch().then().then(data => setStore({ "foo": data.bar }))
-				*/
+
+			getPlanetsFetch: async () => {
+				setStore({ loading: true })
+				try {
+					await fetch("https://www.swapi.tech/api/planets/")
+						.then(res => res.json())
+						.then(data => {
+							setStore({ planets: data.results })
+							setStore({ loading: false })
+						})
+				} catch (error) {
+					console.log('problem with fetch:' + error.message);
+					setStore({ loading: false })
+				}
 			},
-			changeColor: (index, color) => {
-				//get the store
-				const store = getStore();
 
-				//we have to loop the entire demo array to look for the respective index
-				//and change its color
-				const demo = store.demo.map((elm, i) => {
-					if (i === index) elm.background = color;
-					return elm;
-				});
+			addFavorite: async (item) => {
+				setStore({
+					favorites: [...getStore().favorites, item]
+				})
+			},
 
-				//reset the global store
-				setStore({ demo: demo });
-			}
+			removeFavorite: async (index) => {
+				const favorites = getStore().favorites;
+				console.log(favorites)
+				const updateFavorites = [...favorites.slice(0, index), ...favorites.slice(index + 1)];
+				setStore({ favorites: updateFavorites });
+			  }
+
+
+
 		}
 	};
 };
