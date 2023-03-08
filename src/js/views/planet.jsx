@@ -2,26 +2,26 @@ import React, { useState, useEffect, useContext } from "react";
 import PropTypes from "prop-types";
 import { Link, useParams } from "react-router-dom";
 import { Context } from "../store/appContext";
+import SWRlogo from "../../img/SWRlogo.jpg";
 
 export const Planet = () => {
     const { store, actions } = useContext(Context);
     const { planetId } = useParams();
 
     const [isLoading, setIsLoading] = useState(true)
-    const [person, setPerson] = useState([])
+    const [planet, setPlanet] = useState({})
 
+    useEffect(() => { 
+        getPlanetFetch(planetId) 
+    }, [planetId])
 
-    useEffect(() => { getPersonFetch(planetId) }, [])
-
-    async function getPersonFetch(id) {
+    async function getPlanetFetch(id) {
         setIsLoading(true)
         try {
-            await fetch(`https://www.swapi.tech/api/planets/${id}`)
-                .then(res => res.json())
-                .then(data => {
-                    setPerson(data.result.properties)
-                    setIsLoading(false)
-                })
+            const response = await fetch(`https://www.swapi.tech/api/planets/${id}`)
+            const data = await response.json()
+            setPlanet(data.result.properties)
+            setIsLoading(false)
         } catch (error) {
             console.log('NO, HAY PROBLEMA:' + error.message)
             setIsLoading(false);
@@ -30,15 +30,28 @@ export const Planet = () => {
 
     return (
         <div className="container-sm d-flex justify-content-center">
-        <div className="card" style={{ width: "18rem" }}>
-            <img src="..." className="card-img-top" alt="..." />
-            <div className="card-body">
-                <h5 className="card-title">{person.name}</h5>
-                <p className="card-text">Clima: {person.climate} <br /> Diametro: {person.diameter} <br /> Gravedad: {person.gravity} <br />
-                Poblacion: {person.population} <br /> Terreno: {person.terrain}</p>
-                <a href="#" className="btn btn-primary">Add Favorite</a>
-            </div>
-        </div>
+            {isLoading ? (
+                <div className="spinner-border text-primary" role="status">
+                    <span className="sr-only">Loading...</span>
+                </div>
+            ) : (
+                <div style={{ textAlign: "center" }}>
+                    <span className="justify-content-center"><img src={SWRlogo} /></span>
+                <div className="card" style={{ width: "18rem" }}>
+                    <img src={`https://starwars-visualguide.com/assets/img/planets/${planetId}.jpg`} className="card-img-top" alt={planet.name} />
+                    <div className="card-body">
+                        <h5 className="card-title">{planet.name}</h5>
+                        <p className="card-text">Clima: {planet.climate} <br /> Diametro: {planet.diameter} <br /> Gravedad: {planet.gravity} <br />
+                        Poblacion: {planet.population} <br /> Terreno: {planet.terrain}</p>
+                        <button onClick={() => actions.addFavorite(planet)} className="btn btn-primary">Add Favorite</button>
+                    </div>
+                </div>
+                </div>
+            )}
         </div>
     )
+};
+
+Planet.propTypes = {
+    match: PropTypes.object
 };

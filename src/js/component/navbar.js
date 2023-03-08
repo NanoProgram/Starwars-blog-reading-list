@@ -18,7 +18,7 @@ export const Navbar = () => {
 
 	return (
 		<div className="container">
-		<nav className="navbar navbar-dark bg-dark mb-3">
+		<nav className="navbar navbar-dark bg-dark mb-3 fixed-top">
 			<Link to="/">
 				<span className="navbar-brand mb-0 h1"><img src={SWLogo} /></span>
 			</Link>
@@ -37,6 +37,10 @@ export const Navbar = () => {
 				</div>
 			</div>
 		</nav>
+		<br></br>
+		<br></br>
+		<br></br>
+		<br></br>
 		</div>
 	);
 };

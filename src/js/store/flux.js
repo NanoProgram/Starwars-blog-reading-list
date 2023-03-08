@@ -40,15 +40,21 @@ const getState = ({ getStore, getActions, setStore }) => {
 			},
 
 			addFavorite: async (item) => {
-				setStore({
-					favorites: [...getStore().favorites, item]
-				})
-			},
+				const { favorites } = getStore();
+				const itemExists = favorites.find(favorite => favorite.name === item.name);
+				
+				if (!itemExists) {
+				  setStore({
+					favorites: [...favorites, item]
+				  });
+				} else {
+				  alert("Este favorito ya ha sido agregado");
+				}
+			  },
 
-			removeFavorite: async (index) => {
+			  removeFavorite: async (index) => {
 				const favorites = getStore().favorites;
-				console.log(favorites)
-				const updateFavorites = [...favorites.slice(0, index), ...favorites.slice(index + 1)];
+				const updateFavorites = favorites.filter((_, i) => i !== index);
 				setStore({ favorites: updateFavorites });
 			  }
 
